@@ -1,0 +1,13 @@
+services:
+  example:
+    image: gaussian_splatting
+    volumes:
+      - ./:/workspace
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    command: python3.10 render.py -m ./bicycle
