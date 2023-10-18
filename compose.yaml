@@ -1,8 +1,10 @@
 services:
-  example:
+  compose:
     image: gaussian_splatting
     volumes:
       - ./:/workspace
+      - /etc/sudoers.d:/etc/sudoers.d:ro
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
     deploy:
       resources:
         reservations:
@@ -10,4 +12,7 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
-    command: python3.10 render.py -m ./bicycle
+    environment:
+      - DISPLAY
+    # command: python3.10 train.py -s ./bicycle
+    command: python3.10 render.py -m ./output/880b128b-d

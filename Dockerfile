@@ -1,9 +1,12 @@
 FROM ubuntu:20.04
 
+ENV DEBIAN_FRONTEND=noninteractive
+ENV TORCH_CUDA_ARCH_LIST="3.5 5.0 6.0 6.1 7.0 7.5 8.0 8.6"
+
 # Install basic dependencies
 RUN set -xe \
 	&& apt-get update -y \
-	&& apt-get install -y curl gnupg2 wget
+	&& apt-get install -y curl gnupg2 wget git
 
 # Install Python 3.10
 RUN apt-get install software-properties-common -y \
@@ -21,9 +24,6 @@ RUN apt-get update \
 	&& apt-get install -y gcc-11 g++-11
 
 RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && python3.10 get-pip.py
-
-ENV DEBIAN_FRONTEND=noninteractive
-ENV TORCH_CUDA_ARCH_LIST="3.5 5.0 6.0 6.1 7.0 7.5 8.0 8.6"
 
 # # Install CUDA 11.6 Toolkit
 RUN wget https://developer.download.nvidia.com/compute/cuda/repos/wsl-ubuntu/x86_64/cuda-wsl-ubuntu.pin
@@ -46,7 +46,6 @@ RUN apt-get install -y libpq-dev build-essential nvidia-container-toolkit
 
 # Create workspace
 WORKDIR /workspace
-COPY ./requirements.txt ./
 COPY ./submodules ./submodules
 
 # Install Gaussian Splatting Requirements
@@ -67,7 +66,7 @@ RUN python3.10 -m pip install plyfile==0.8.1 tqdm cmake submodules/diff-gaussian
 # # RUN sed -i 's/\bembree\b/embree3/g' /workspace/gaussian-splatting/SIBR_viewers/src/core/raycaster/CMakeLists.txt
 
 # # Ready to build the viewer now.
-# # WORKDIR /workspace/gaussian-splatting/SIBR_viewers
-# # RUN cmake -Bbuild . -DCMAKE_BUILD_TYPE=Release && \
-# #     cmake --build build -j24 --target install
-# # CMD ["python3", "train.py -s ./workspace/bicycle/input.ply --eval"]
+# COPY ./SIBR_viewers ./SIBR_viewers
+# WORKDIR /workspace/SIBR_viewers
+# RUN cmake -Bbuild . -DCMAKE_BUILD_TYPE=Release && \
+#     cmake --build build -j24 --target install
